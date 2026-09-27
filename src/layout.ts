@@ -35,20 +35,21 @@ a { color: inherit; }
 .tags a.on { color: var(--ink); border-bottom: 1px solid var(--amber); }
 .tags a:hover { color: var(--amber); }
 .toc { list-style: none; padding: 0; margin: 0 0 30px; }
-.toc li { border-bottom: 1px solid #efece6; padding: 14px 0; }
-.toc li:last-child { border-bottom: none; }
+/* 目次の行は A2（2026-09-27）: 題を太く・本文の頭は小さく薄い角ゴ・タグは琥珀色、罫線は無く余白 30px で区切る */
+.toc li { padding: 0; margin: 0 0 30px; }
+.toc li:last-child { margin-bottom: 4px; }
 .toc li > a.row { display: block; text-decoration: none; }
-.toc .ln { display: flex; align-items: baseline; gap: 6px; font-size: 17px; line-height: 1.6; }
+.toc .ln { display: flex; align-items: baseline; gap: 6px; font-size: 17.5px; font-weight: 600; line-height: 1.6; }
 .toc .t { flex: 0 1 auto; overflow-wrap: anywhere; }
 .toc .dots { flex: 1 1 24px; border-bottom: 1px dotted var(--dot); transform: translateY(-5px); }
 .toc .d { flex: none; font-size: 12px; color: var(--faint); font-family: "Zen Kaku Gothic New", sans-serif; }
-.toc .ex { font-size: 14.5px; line-height: 1.85; color: #555; margin: 4px 0 0; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2;
-           -webkit-box-orient: vertical; overflow: hidden; }
+.toc .ex { font-size: 13.5px; line-height: 1.8; color: #77716a; font-family: "Zen Kaku Gothic New", sans-serif; margin: 6px 0 0;
+           display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .toc li > a.row:hover .t { color: var(--amber); }
-.toc .tl { margin: 4px 0 0; font-size: 12px; line-height: 1.8; color: var(--sub); font-family: "Zen Kaku Gothic New", sans-serif; }
-.toc .tl a { color: var(--sub); text-decoration: none; }
-.toc .tl a:hover { color: var(--amber); }
-.toc .tl .sep { color: var(--dot); margin: 0 .15em; }
+.toc .tl { margin: 6px 0 0; font-size: 11.5px; line-height: 1.8; letter-spacing: .02em; font-family: "Zen Kaku Gothic New", sans-serif; }
+.toc .tl a { color: var(--amber); text-decoration: none; }
+.toc .tl a:hover { text-decoration: underline; text-underline-offset: 2px; }
+.toc .tl .sep { color: #d8c7ad; margin: 0 .3em; }
 .empty { text-align: center; color: var(--faint); font-size: 15.5px; margin: 0 0 30px; }
 .pager { display: flex; justify-content: space-between; font-size: 14px; color: var(--sub); margin: -10px 0 26px;
          font-family: "Zen Kaku Gothic New", sans-serif; }

@@ -35,7 +35,7 @@ export function listPage(o: {
           const ex = p.description || autoDescription(p.head);
           // 行のリンク（タイトル…日付・本文の頭）とタグのリンクは兄弟に置く（リンクを入れ子にしない）
           const tl = p.tags.length
-            ? `<p class="tl">${p.tags.map((t) => `<a href="${escapeHtml(tagHref(t))}">${escapeHtml(t)}</a>`).join("<span class=\"sep\">・</span>")}</p>`
+            ? `<p class="tl">${p.tags.map((t) => `<a href="${escapeHtml(tagHref(t))}">${escapeHtml(t)}</a>`).join("<span class=\"sep\">／</span>")}</p>`
             : "";
           return `<li><a class="row" href="/${p.slug}/"><div class="ln"><span class="t">${escapeHtml(p.title)}</span><span class="dots"></span><span class="d">${tocDate(p.updated_at)}</span></div>${
             ex ? `<p class="ex">${escapeHtml(ex)}</p>` : ""
