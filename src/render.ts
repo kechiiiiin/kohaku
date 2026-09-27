@@ -232,6 +232,8 @@ export type RenderPage = {
 
 /** h1 の末尾の（…）は改行して2行目に（見本どおり） */
 function breakTitle(inner: string): string {
+  // 短い題（スマホ1行に収まる程度）は折らない
+  if (inner.replace(/<[^>]*>/g, "").length <= 12) return inner;
   return inner.replace(/^(.+?)(（[^（）]+）)$/, "$1<br>$2");
 }
 
