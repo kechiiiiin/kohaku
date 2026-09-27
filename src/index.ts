@@ -430,7 +430,7 @@ app.all("/api/*", (c) => apiError(c, 404, "API がありません"));
 
 const PAGE_HEADERS = {
   "Content-Type": "text/html; charset=utf-8",
-  "Cache-Control": "public, max-age=60",
+  "Cache-Control": "public, max-age=60, no-transform",
   "X-Content-Type-Options": "nosniff",
   "Referrer-Policy": "strict-origin-when-cross-origin",
 };
@@ -506,7 +506,7 @@ app.get("*", async (c) => {
       return new Response(found.body, {
         headers: {
           "Content-Type": "text/html; charset=utf-8",
-          "Cache-Control": "public, max-age=60",
+          "Cache-Control": "public, max-age=60, no-transform",
           "X-Content-Type-Options": "nosniff",
           "Referrer-Policy": "strict-origin-when-cross-origin",
         },
