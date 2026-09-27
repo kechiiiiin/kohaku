@@ -18,7 +18,7 @@ directory = "./public"
 [[d1_databases]]
 binding = "DB"
 database_name = "kohaku"
-database_id = "REPLACE_WITH_D1_ID"
+database_id = "2ef3b96f-d42d-4134-9b9e-16b79e6263ef"
 migrations_dir = "migrations"
 
 [[r2_buckets]]
