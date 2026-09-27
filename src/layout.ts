@@ -48,7 +48,7 @@ td { min-width: 4.5em; }
 th { background: var(--th-bg); }
 blockquote { border-left: 4px solid var(--quote); margin-left: 0; padding-left: 1rem; color: var(--muted); }
 img { max-width: 100%; height: auto; }
-ul.contains-task-list, li.task-list-item { list-style: none; }
+li:has(> input.task-check), li:has(> p > input.task-check) { list-style: none; margin-left: -1.2em; }
 input.task-check { transform: scale(1.15); margin-right: .3rem; }
 .callout { border-radius: 8px; padding: .8rem 1rem; margin: 1rem 0; border-left: 4px solid; }
 .callout-title { font-weight: 600; display: flex; align-items: baseline; gap: .5em; }

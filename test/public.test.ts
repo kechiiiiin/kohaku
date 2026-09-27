@@ -11,7 +11,7 @@ tags: [cooking]
 # 豚しゃぶ
 
 > [!tip] コツ
-> 茹ですぎない
+> 茹ですぎない ==強調==
 
 - [ ] 豚肉
 - [x] ポン酢
@@ -50,6 +50,7 @@ test("md ページ: head 一式・コールアウト・タスク・表・コー�
   assert.match(h, /<meta name="description" content="ごま油とポン酢で。">/);
   assert.doesNotMatch(h, /noindex/);
   assert.match(h, /callout callout-green/);
+  assert.match(h, /<mark>強調<\/mark>/);
   assert.match(h, /class="task-check"/);
   assert.match(h, /kohaku-check:/);
   assert.match(h, /<div class="table-wrap"><table>/);

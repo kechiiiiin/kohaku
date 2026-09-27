@@ -1,4 +1,4 @@
-import { Marked, Lexer } from "marked";
+import { Marked } from "marked";
 import type { Tokens, TokenizerAndRendererExtension } from "marked";
 import { escapeHtml, jstDate, ORIGIN, tagHref } from "./util.ts";
 import { layout } from "./layout.ts";
@@ -88,9 +88,10 @@ function makeMarked(assets: AssetRef[]): Marked {
         const style = CALLOUTS[type] ?? CALLOUTS.note;
         const titleMd = (m[2] ?? "").trim() || type.charAt(0).toUpperCase() + type.slice(1);
         const bodyMd = m[3] ?? "";
-        const titleHtml = this.parser.parseInline(Lexer.lexInline(titleMd));
+        // 自前の拡張（==ハイライト== など）を効かせるため、このインスタンスの lexer で読む
+        const titleHtml = md.parseInline(titleMd, { async: false }) as string;
         const bodyHtml = bodyMd.trim()
-          ? `<div class="callout-body">\n${this.parser.parse(Lexer.lex(bodyMd, { gfm: true }))}</div>\n`
+          ? `<div class="callout-body">\n${this.parser.parse(md.lexer(bodyMd))}</div>\n`
           : "";
         return `<div class="callout callout-${style.palette}">
 <div class="callout-title"><span class="callout-icon">${style.icon}</span>${titleHtml}</div>
