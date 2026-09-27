@@ -109,7 +109,7 @@ export function stripFrontmatter(md: string): string {
 }
 
 export function stripOmitted(md: string): string {
-  return md.replace(/<!--\s*kohaku:omit\s*-->[\s\S]*?<!--\s*\/kohaku:omit\s*-->\n?/g, "");
+  return md.replace(/<!--\s*kohaku:omit\s*-->[\s\S]*?<!--\s*\/kohaku:omit\s*-->/g, "");
 }
 
 /** コードブロックの外側だけに変換をかける */
