@@ -1,0 +1,58 @@
+name: Deploy to Cloudflare Workers
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch: {}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: 公開範囲を広げる設定が無いこと
+        run: |
+          grep -qE '^workers_dev = false' wrangler.toml || { echo "::error::workers_dev = false が必要"; exit 1; }
+          grep -qE '^preview_urls = false' wrangler.toml || { echo "::error::preview_urls = false が必要"; exit 1; }
+      - run: npm run check
+
+  deploy:
+    needs: test
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    # マイグレーションの途中で取り消されないよう、デプロイだけ直列にする
+    concurrency:
+      group: deploy-cloudflare
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: D1 migrations（デプロイより先に）
+        uses: cloudflare/wrangler-action@v4
+        with:
+          # package.json の devDependencies.wrangler と揃える
+          wranglerVersion: "4.131.2"
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: d1 migrations apply kohaku --remote
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v4
+        with:
+          wranglerVersion: "4.131.2"
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
