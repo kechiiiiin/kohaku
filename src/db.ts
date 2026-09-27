@@ -8,6 +8,7 @@ export type ListItem = {
   description: string;
   updated_at: number;
   tags: string[];
+  head: string; // description が空のときの本文の頭（それ以外は空）
 };
 
 function splitTags(s: string | null): string[] {
@@ -25,13 +26,14 @@ export async function listPublic(db: D1Database, opts: { tag?: string; page?: nu
   const binds = opts.tag ? [opts.tag] : [];
   const rows = await db
     .prepare(
-      `SELECT p.slug, p.title, p.description, p.updated_at, ${TAGS_SUBQ} AS tags
+      `SELECT p.slug, p.title, p.description, p.updated_at, ${TAGS_SUBQ} AS tags,
+              CASE WHEN p.description = '' THEN substr(p.body, 1, 2000) ELSE '' END AS head
        FROM pages p WHERE ${where}
        ORDER BY p.updated_at DESC, p.id DESC LIMIT ${PAGE_SIZE + 1} OFFSET ${(page - 1) * PAGE_SIZE}`
     )
     .bind(...binds)
-    .all<{ slug: string; title: string; description: string; updated_at: number; tags: string | null }>();
-  const items: ListItem[] = rows.results.map((r) => ({ ...r, tags: splitTags(r.tags) }));
+    .all<{ slug: string; title: string; description: string; updated_at: number; tags: string | null; head: string | null }>();
+  const items: ListItem[] = rows.results.map((r) => ({ ...r, head: r.head ?? "", tags: splitTags(r.tags) }));
   const hasNext = items.length > PAGE_SIZE;
   return { items: items.slice(0, PAGE_SIZE), hasNext, page };
 }

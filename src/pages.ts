@@ -1,5 +1,6 @@
 import { escapeHtml, jstDate, ORIGIN, SITE_NAME, tagHref } from "./util.ts";
 import { layout } from "./layout.ts";
+import { autoDescription } from "./render.ts";
 import type { ListItem } from "./db.ts";
 
 function xmlEscape(s: string): string {
@@ -21,31 +22,34 @@ export function listPage(o: {
   hasNext: boolean;
 }): string {
   const base = o.activeTag ? tagHref(o.activeTag) : "/";
-  const kicker = `<p class="kicker">目次${o.activeTag ? ` <span class="x">— ${escapeHtml(o.activeTag)}</span>` : ""}</p>`;
-  const toc = o.items.length
-    ? `<ul class="toc">\n${o.items
-        .map(
-          (p) =>
-            `<li><a href="/${p.slug}/"><span class="t">${escapeHtml(p.title)}</span><span class="dots"></span><span class="d">${tocDate(p.updated_at)}</span></a></li>`
-        )
-        .join("\n")}\n</ul>`
-    : `<p class="empty">まだページがありません。</p>`;
-  const prev = o.page > 1 ? `<a href="${escapeHtml(base)}${o.page - 1 > 1 ? `?page=${o.page - 1}` : ""}">← 新しい方</a>` : "<span></span>";
-  const next = o.hasNext ? `<a href="${escapeHtml(base)}?page=${o.page + 1}">古い方 →</a>` : "<span></span>";
-  const pager = o.page > 1 || o.hasNext ? `<div class="pager">${prev}${next}</div>` : "";
+  // タグを上に（サイト名の下・罫線で区切る）
   const tags = o.tags.length
     ? `<nav class="tags" aria-label="タグ">${o.tags
         .map((t) => `<a${t.tag === o.activeTag ? ' class="on"' : ""} href="${escapeHtml(tagHref(t.tag))}">${escapeHtml(t.tag)}</a>`)
         .join("")}</nav>`
     : "";
+  const kicker = `<p class="kicker">目次${o.activeTag ? ` <span class="x">— ${escapeHtml(o.activeTag)}</span>` : ""}</p>`;
+  const toc = o.items.length
+    ? `<ul class="toc">\n${o.items
+        .map((p) => {
+          const ex = p.description || autoDescription(p.head);
+          return `<li><a href="/${p.slug}/"><div class="ln"><span class="t">${escapeHtml(p.title)}</span><span class="dots"></span><span class="d">${tocDate(p.updated_at)}</span></div>${
+            ex ? `<p class="ex">${escapeHtml(ex)}</p>` : ""
+          }</a></li>`;
+        })
+        .join("\n")}\n</ul>`
+    : `<p class="empty">まだページがありません。</p>`;
+  const prev = o.page > 1 ? `<a href="${escapeHtml(base)}${o.page - 1 > 1 ? `?page=${o.page - 1}` : ""}">← 新しい方</a>` : "<span></span>";
+  const next = o.hasNext ? `<a href="${escapeHtml(base)}?page=${o.page + 1}">古い方 →</a>` : "<span></span>";
+  const pager = o.page > 1 || o.hasNext ? `<div class="pager">${prev}${next}</div>` : "";
   const canonical = base + (o.page > 1 ? `?page=${o.page}` : "");
   return layout({
     title: o.activeTag ? `目次 — ${o.activeTag}` : SITE_NAME,
     description: o.activeTag ? `琥珀の「${o.activeTag}」のページの目次` : "琥珀の目次",
     canonicalPath: canonical,
     ogType: "website",
-    smallHeader: !!o.activeTag || o.page > 1,
-    body: `${kicker}\n${toc}\n${pager}\n${tags}`,
+    topHeader: true,
+    body: `${tags}\n${kicker}\n${toc}\n${pager}`,
   });
 }
 

@@ -120,3 +120,15 @@ test("EXIF GPS 検出と高エントロピー判定", () => {
   assert.equal(isHighEntropyToken("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"), false);
   assert.equal(isHighEntropyToken("Zq8vK2mN4pR7tX1wB5yC9dF3gH6jL0sA"), true);
 });
+
+test("目次: タグが上・各行に本文の頭（description が空なら本文先頭）・アイコンの link", async () => {
+  const { env } = makeEnv();
+  await put(env, "with-desc", { title: "説明あり", description: "短い説明です。" });
+  await put(env, "no-desc", { title: "説明なし", body: "# 説明なし\n\n本文の頭がここに出る。" });
+  const top = await (await req(env, "/", { auth: false })).text();
+  assert.ok(top.indexOf('<nav class="tags"') < top.indexOf('<p class="kicker">目次'));
+  assert.match(top, /<p class="ex">短い説明です。<\/p>/);
+  assert.match(top, /<p class="ex">本文の頭がここに出る。<\/p>/);
+  assert.match(top, /<link rel="apple-touch-icon" href="\/apple-touch-icon.png">/);
+  assert.match(top, /<link rel="icon" href="\/favicon.ico" sizes="32x32">/);
+});
