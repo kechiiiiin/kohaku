@@ -1,0 +1,33 @@
+name = "kohaku"
+main = "src/index.ts"
+# wrangler 4.131.2 同梱の workerd が対応する日付
+compatibility_date = "2026-08-22"
+
+# 公開口は Custom Domain だけ（重複コンテンツと裏口を作らない）
+workers_dev = false
+preview_urls = false
+
+[[routes]]
+pattern = "kohaku.kechiiiiin.com"
+custom_domain = true
+
+# /static/*（og-default.png・favicon.svg）。一致するファイルが無いパスだけ Worker に来る
+[assets]
+directory = "./public"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "kohaku"
+database_id = "REPLACE_WITH_D1_ID"
+migrations_dir = "migrations"
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "kohaku-assets"
+
+[observability]
+enabled = true
+
+# 秘密は `wrangler secret put` で入れる（リポジトリには置かない）:
+#   API_TOKEN  … 書き込み API の Bearer トークン（未設定なら /api/* は 503）
+#   DENYLIST   … 公開禁止語（改行区切り）
