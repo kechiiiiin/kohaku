@@ -42,7 +42,9 @@ pre { background: var(--pre-bg); color: var(--pre-fg); padding: 1rem 1.2rem; bor
 pre code { background: none; padding: 0; color: inherit; }
 .table-wrap { overflow-x: auto; }
 table { border-collapse: collapse; margin: 1rem 0; }
-th, td { border: 1px solid var(--line); padding: .4rem .8rem; }
+th, td { border: 1px solid var(--line); padding: .4rem .8rem; overflow-wrap: normal; }
+th { white-space: nowrap; }
+td { min-width: 4.5em; }
 th { background: var(--th-bg); }
 blockquote { border-left: 4px solid var(--quote); margin-left: 0; padding-left: 1rem; color: var(--muted); }
 img { max-width: 100%; height: auto; }
