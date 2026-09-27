@@ -93,6 +93,7 @@ table { border-collapse: collapse; width: 100%; font-size: 15px; min-width: 460p
 th, td { padding: 8px 8px; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; line-height: 1.7; }
 thead th { white-space: nowrap; font-weight: 400; color: var(--faint); font-size: 12.5px; font-family: "Zen Kaku Gothic New", sans-serif; border-bottom: 1px solid var(--ink); }
 tbody tr:last-child td { border-bottom: 1px solid var(--ink); }
+tbody td:first-child { white-space: nowrap; } /* 行見出し（1列目）は折り返さない */
 
 /* 注記（コールアウト）：色の箱にせず、細い琥珀色の縦線と小さなラベル */
 .aside { margin: 0 0 1.4em; padding: 2px 0 2px 16px; border-left: 1px solid var(--amber); font-size: 15.5px; line-height: 1.9; color: #3b372f; }
