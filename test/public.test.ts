@@ -129,6 +129,9 @@ test("目次: タグが上・各行に本文の頭（description が空なら本
   assert.ok(top.indexOf('<nav class="tags"') < top.indexOf('<p class="kicker">目次'));
   assert.match(top, /<p class="ex">短い説明です。<\/p>/);
   assert.match(top, /<p class="ex">本文の頭がここに出る。<\/p>/);
+  // 各行のタグ（行リンクの外・兄弟に置く）
+  assert.match(top, /<\/a><p class="tl"><a href="\/t\/%E3%83%AC%E3%82%B7%E3%83%94\/">レシピ<\/a><\/p><\/li>/);
+  assert.doesNotMatch(top, /<a class="row"(?:(?!<\/a>).)*<a /s); // 行リンクの中にリンクが無い
   assert.match(top, /<link rel="apple-touch-icon" href="\/apple-touch-icon.png">/);
   assert.match(top, /<link rel="icon" href="\/favicon.ico" sizes="32x32">/);
 });

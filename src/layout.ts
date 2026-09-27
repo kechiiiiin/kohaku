@@ -35,16 +35,20 @@ a { color: inherit; }
 .tags a.on { color: var(--ink); border-bottom: 1px solid var(--amber); }
 .tags a:hover { color: var(--amber); }
 .toc { list-style: none; padding: 0; margin: 0 0 30px; }
-.toc li { border-bottom: 1px solid #efece6; }
+.toc li { border-bottom: 1px solid #efece6; padding: 14px 0; }
 .toc li:last-child { border-bottom: none; }
-.toc li > a { display: block; padding: 14px 0; text-decoration: none; }
+.toc li > a.row { display: block; text-decoration: none; }
 .toc .ln { display: flex; align-items: baseline; gap: 6px; font-size: 17px; line-height: 1.6; }
 .toc .t { flex: 0 1 auto; overflow-wrap: anywhere; }
 .toc .dots { flex: 1 1 24px; border-bottom: 1px dotted var(--dot); transform: translateY(-5px); }
 .toc .d { flex: none; font-size: 12px; color: var(--faint); font-family: "Zen Kaku Gothic New", sans-serif; }
 .toc .ex { font-size: 14.5px; line-height: 1.85; color: #555; margin: 4px 0 0; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2;
            -webkit-box-orient: vertical; overflow: hidden; }
-.toc li > a:hover .t { color: var(--amber); }
+.toc li > a.row:hover .t { color: var(--amber); }
+.toc .tl { margin: 4px 0 0; font-size: 12px; line-height: 1.8; color: var(--sub); font-family: "Zen Kaku Gothic New", sans-serif; }
+.toc .tl a { color: var(--sub); text-decoration: none; }
+.toc .tl a:hover { color: var(--amber); }
+.toc .tl .sep { color: var(--dot); margin: 0 .15em; }
 .empty { text-align: center; color: var(--faint); font-size: 15.5px; margin: 0 0 30px; }
 .pager { display: flex; justify-content: space-between; font-size: 14px; color: var(--sub); margin: -10px 0 26px;
          font-family: "Zen Kaku Gothic New", sans-serif; }
