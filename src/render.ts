@@ -4,39 +4,39 @@ import { escapeHtml, jstDate, ORIGIN, tagHref } from "./util.ts";
 import { layout } from "./layout.ts";
 
 /**
- * Obsidian コールアウト（> [!note] タイトル …）対応（泡沫 render.ts から）。
- * 未知のタイプは note 扱い。折りたたみ記法（[!note]- / [!note]+）は通常表示。
+ * Obsidian コールアウト（> [!note] タイトル …）対応（泡沫 render.ts の骨格から）。
+ * C案（ノート）では色の箱にせず「細い琥珀色の縦線＋小さなラベル」。タイプごとの色分けはしない。
+ * ラベルはタイトル指定があればそれ、無ければタイプの日本語名。未知のタイプは「メモ」。
+ * 折りたたみ記法（[!note]- / [!note]+）は通常表示。
  */
-type CalloutStyle = { icon: string; palette: "blue" | "green" | "yellow" | "red" };
-
-const CALLOUTS: Record<string, CalloutStyle> = {
-  note: { icon: "📝", palette: "blue" },
-  info: { icon: "ℹ️", palette: "blue" },
-  abstract: { icon: "📋", palette: "blue" },
-  summary: { icon: "📋", palette: "blue" },
-  tldr: { icon: "📋", palette: "blue" },
-  todo: { icon: "☑️", palette: "blue" },
-  question: { icon: "❓", palette: "blue" },
-  help: { icon: "❓", palette: "blue" },
-  faq: { icon: "❓", palette: "blue" },
-  quote: { icon: "💬", palette: "blue" },
-  cite: { icon: "💬", palette: "blue" },
-  example: { icon: "🔎", palette: "blue" },
-  tip: { icon: "💡", palette: "green" },
-  hint: { icon: "💡", palette: "green" },
-  success: { icon: "✅", palette: "green" },
-  check: { icon: "✅", palette: "green" },
-  done: { icon: "✅", palette: "green" },
-  warning: { icon: "⚠️", palette: "yellow" },
-  caution: { icon: "⚠️", palette: "yellow" },
-  attention: { icon: "⚠️", palette: "yellow" },
-  important: { icon: "❗", palette: "yellow" },
-  danger: { icon: "🔥", palette: "red" },
-  error: { icon: "🔥", palette: "red" },
-  failure: { icon: "❌", palette: "red" },
-  fail: { icon: "❌", palette: "red" },
-  missing: { icon: "❌", palette: "red" },
-  bug: { icon: "🐛", palette: "red" },
+const CALLOUT_LABELS: Record<string, string> = {
+  note: "メモ",
+  info: "情報",
+  abstract: "要約",
+  summary: "要約",
+  tldr: "要約",
+  todo: "やること",
+  question: "問い",
+  help: "問い",
+  faq: "問い",
+  quote: "引用",
+  cite: "引用",
+  example: "例",
+  tip: "ヒント",
+  hint: "ヒント",
+  success: "できた",
+  check: "できた",
+  done: "できた",
+  warning: "注意",
+  caution: "注意",
+  attention: "注意",
+  important: "重要",
+  danger: "危険",
+  error: "危険",
+  failure: "失敗",
+  fail: "失敗",
+  missing: "失敗",
+  bug: "不具合",
 };
 
 // 1行目: [!type] / [!type]- / [!type]+ （後ろにタイトル任意）、2行目以降が本文
@@ -85,18 +85,14 @@ function makeMarked(assets: AssetRef[]): Marked {
           return `<blockquote>\n${this.parser.parse(token.tokens)}</blockquote>\n`;
         }
         const type = m[1].toLowerCase();
-        const style = CALLOUTS[type] ?? CALLOUTS.note;
-        const titleMd = (m[2] ?? "").trim() || type.charAt(0).toUpperCase() + type.slice(1);
+        const titleMd = (m[2] ?? "").trim();
+        const label = titleMd
+          ? (md.parseInline(titleMd, { async: false }) as string)
+          : escapeHtml(CALLOUT_LABELS[type] ?? CALLOUT_LABELS.note);
         const bodyMd = m[3] ?? "";
         // 自前の拡張（==ハイライト== など）を効かせるため、このインスタンスの lexer で読む
-        const titleHtml = md.parseInline(titleMd, { async: false }) as string;
-        const bodyHtml = bodyMd.trim()
-          ? `<div class="callout-body">\n${this.parser.parse(md.lexer(bodyMd))}</div>\n`
-          : "";
-        return `<div class="callout callout-${style.palette}">
-<div class="callout-title"><span class="callout-icon">${style.icon}</span>${titleHtml}</div>
-${bodyHtml}</div>
-`;
+        const bodyHtml = bodyMd.trim() ? this.parser.parse(md.lexer(bodyMd)) : "";
+        return `<div class="aside"><span class="h">${label}</span>${bodyHtml}</div>\n`;
       },
     },
   });
@@ -234,18 +230,53 @@ export type RenderPage = {
   tags: string[];
 };
 
+/** h1 の末尾の（…）は改行して2行目に（見本どおり） */
+function breakTitle(inner: string): string {
+  return inner.replace(/^(.+?)(（[^（）]+）)$/, "$1<br>$2");
+}
+
+/** 日本時間の YYYY年M月D日 */
+export function jaDate(ms: number): string {
+  const [y, m, d] = jstDate(ms).split("-").map(Number);
+  return `${y}年${m}月${d}日`;
+}
+
+/** marked の出力を C案の組みに整える */
+export function shapeHtml(html: string, title: string, updatedAt: number): string {
+  let out = html
+    // 表は枠内で横スクロール
+    .replace(/<table>/g, '<div class="tbl"><table>')
+    .replace(/<\/table>/g, "</table></div>")
+    // タスク: 四角い枠＋ラベル（済みは取り消し線）
+    .replace(
+      /<li>(?:<p>)?<input type="checkbox" class="task-check"( checked)?> ?([\s\S]*?)(<\/p>\n?)?<\/li>/g,
+      (_m, ck: string | undefined, text: string) =>
+        `<li><label><input type="checkbox" class="task-check"${ck ?? ""}><span>${text.trim()}</span></label></li>`
+    )
+    .replace(/<ul>(\s*<li><label><input type="checkbox" class="task-check")/g, '<ul class="task">$1')
+    // 太字だけの段落は小見出し（lead）
+    .replace(/<p><strong>([^<]*)<\/strong>:?<\/p>/g, '<p class="lead">$1</p>');
+  const dateline = `<div class="dateline">${jaDate(updatedAt)}</div>`;
+  const m = out.match(/^\s*<h1[^>]*>([\s\S]*?)<\/h1>\n?/);
+  if (m) {
+    out = `<h1>${breakTitle(m[1])}</h1>\n${dateline}\n` + out.slice(m[0].length);
+  } else {
+    out = `<h1>${breakTitle(escapeHtml(title))}</h1>\n${dateline}\n` + out;
+  }
+  return out;
+}
+
 export async function renderMarkdownPage(p: RenderPage, links: LinkTable, assets: AssetRef[]): Promise<string> {
   const pre = preprocess(p.body, links, assets);
   const md = makeMarked(assets);
-  let html = await md.parse(pre);
-  html = html.replace(/<table>/g, '<div class="table-wrap"><table>').replace(/<\/table>/g, "</table></div>");
+  const html = shapeHtml(await md.parse(pre), p.title, p.updated_at);
   const img = firstImage(pre, assets);
   const desc = p.description || autoDescription(p.body);
-  const tags = p.tags.map((t) => `<a class="tag" href="${escapeHtml(tagHref(t))}">#${escapeHtml(t)}</a>`).join(" ");
+  const tags = p.tags.map((t) => `<a href="${escapeHtml(tagHref(t))}">${escapeHtml(t)}</a>`).join("");
   const body = `<article>
 ${html}
 </article>
-<footer class="page-foot"><span>更新 ${jstDate(p.updated_at)}</span>${tags ? `<span>${tags}</span>` : ""}</footer>`;
+<div class="foot">${tags}<a class="back" href="/">目次へ</a></div>`;
   return layout({
     title: p.title,
     description: desc,
@@ -253,6 +284,7 @@ ${html}
     ogImage: img ? `${ORIGIN}/${p.slug}/${img.path.split("/").map(encodeURIComponent).join("/")}` : null,
     ogType: "article",
     noindex: !p.listed,
+    smallHeader: true,
     body,
     script: html.includes("task-check") ? TASK_SCRIPT : undefined,
   });

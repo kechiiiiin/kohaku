@@ -1,87 +1,115 @@
 import { escapeHtml, ORIGIN, SITE_NAME } from "./util.ts";
 
-/** 共通 CSS（泡沫 render.ts の CSS を琥珀色に） */
+/**
+ * 見た目: C案（ノート）2026-09-27 Keisuke 決定。
+ * 見本は vault の hestia/projects/kohaku-design/kohaku-design-c.html。
+ * 白い紙に墨の明朝、差し色は琥珀だけ。罫線と余白で組む。ダークモードは持たない。
+ */
+export const FONTS_HREF =
+  "https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@400;600&family=Zen+Kaku+Gothic+New:wght@400;500&display=swap";
+
 export const CSS = `
+*, *::before, *::after { box-sizing: border-box; }
 :root {
-  --bg: #fffdf8; --fg: #3d3428; --head: #2b2217; --muted: #7a6a55; --line: #efe3cc;
-  --accent: #a8651a; --accent-bg: #fbf1df; --code-bg: #f6eee0; --pre-bg: #2b2217; --pre-fg: #f3e9d8;
-  --th-bg: #f8efdf; --quote: #d9bf8f;
-  --blue-b: #7ba7cc; --blue-bg: #edf4fa; --blue-t: #4a6f96;
-  --green-b: #a3be8c; --green-bg: #f1f6ec; --green-t: #5f7a4a;
-  --yellow-b: #e0c580; --yellow-bg: #fbf6e9; --yellow-t: #93763a;
-  --red-b: #d08a92; --red-bg: #faf0f1; --red-t: #a04b56;
-  color-scheme: light dark;
+  --paper: #ffffff; --ink: #1e1e1e; --sub: #6d675d; --faint: #8a8478; --rule: #e2ded5; --dot: #b5afa4;
+  --amber: #b06a10; --tint: #f3f0e9;
+  color-scheme: light;
 }
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #1b1712; --fg: #e8dfd0; --head: #f6ecdb; --muted: #a8977f; --line: #3a3126;
-    --accent: #e8a94f; --accent-bg: #2e2518; --code-bg: #2c251c; --pre-bg: #110e0a; --pre-fg: #efe4d2;
-    --th-bg: #2a2219; --quote: #6e5a3d;
-    --blue-bg: #1c2631; --blue-t: #9cc0e0; --green-bg: #1f2a1b; --green-t: #b6d09f;
-    --yellow-bg: #2d2717; --yellow-t: #e6cf8f; --red-bg: #2f1d20; --red-t: #e6a2aa;
-  }
-}
-* { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
-body { max-width: 760px; margin: 0 auto; padding: 1.25rem 1.25rem 4rem;
-       font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Noto Sans JP", sans-serif;
-       line-height: 1.8; color: var(--fg); background: var(--bg); overflow-wrap: anywhere; }
-header.site { display: flex; align-items: center; padding-bottom: .75rem; margin-bottom: 1.5rem;
-              border-bottom: 1px solid var(--line); }
-header.site a.brand { color: var(--accent); text-decoration: none; font-weight: 700; font-size: 1.15rem;
-                      letter-spacing: .12em; display: inline-flex; align-items: center; gap: .45rem; }
-header.site a.brand::before { content: ""; width: .8rem; height: .8rem; border-radius: 50%;
-                              background: radial-gradient(circle at 35% 35%, #ffd98a, #c77d1a 70%, #8a4f0d); }
-h1, h2, h3, h4 { line-height: 1.4; color: var(--head); }
-h1 { border-bottom: 2px solid var(--line); padding-bottom: .4rem; font-size: 1.6rem; }
-h2 { border-bottom: 1px solid var(--line); padding-bottom: .3rem; }
-a { color: var(--accent); }
-mark { background: #ffe29a; color: #3d3428; padding: 0 .15em; border-radius: 2px; }
-code { background: var(--code-bg); padding: .15em .4em; border-radius: 4px; font-size: .9em; }
-pre { background: var(--pre-bg); color: var(--pre-fg); padding: 1rem 1.2rem; border-radius: 8px; overflow-x: auto; }
-pre code { background: none; padding: 0; color: inherit; }
-.table-wrap { overflow-x: auto; }
-table { border-collapse: collapse; margin: 1rem 0; }
-th, td { border: 1px solid var(--line); padding: .4rem .8rem; overflow-wrap: normal; }
-th { white-space: nowrap; }
-td { min-width: 4.5em; }
-th { background: var(--th-bg); }
-blockquote { border-left: 4px solid var(--quote); margin-left: 0; padding-left: 1rem; color: var(--muted); }
-img { max-width: 100%; height: auto; }
-li:has(> input.task-check), li:has(> p > input.task-check) { list-style: none; margin-left: -1.2em; }
-input.task-check { transform: scale(1.15); margin-right: .3rem; }
-.callout { border-radius: 8px; padding: .8rem 1rem; margin: 1rem 0; border-left: 4px solid; }
-.callout-title { font-weight: 600; display: flex; align-items: baseline; gap: .5em; }
-.callout-icon { flex: none; }
-.callout-body { margin-top: .4rem; }
-.callout-body > :first-child { margin-top: 0; }
-.callout-body > :last-child { margin-bottom: 0; }
-.callout-blue { border-color: var(--blue-b); background: var(--blue-bg); }
-.callout-blue > .callout-title { color: var(--blue-t); }
-.callout-green { border-color: var(--green-b); background: var(--green-bg); }
-.callout-green > .callout-title { color: var(--green-t); }
-.callout-yellow { border-color: var(--yellow-b); background: var(--yellow-bg); }
-.callout-yellow > .callout-title { color: var(--yellow-t); }
-.callout-red { border-color: var(--red-b); background: var(--red-bg); }
-.callout-red > .callout-title { color: var(--red-t); }
-footer.page-foot { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--line);
-                   color: var(--muted); font-size: .88rem; display: flex; flex-wrap: wrap; gap: .4rem .9rem; }
-a.tag { display: inline-block; text-decoration: none; background: var(--accent-bg); color: var(--accent);
-        border-radius: 999px; padding: .05rem .65rem; font-size: .85rem; line-height: 1.7; }
-a.tag.active { background: var(--accent); color: var(--bg); }
-a.tag .n { opacity: .7; margin-left: .3em; font-size: .8em; }
-nav.tags { display: flex; flex-wrap: wrap; gap: .45rem; margin: 0 0 1.5rem; }
-ul.pages { list-style: none; padding: 0; margin: 0; }
-ul.pages li { padding: 1rem 0; border-bottom: 1px solid var(--line); }
-ul.pages a.title { font-size: 1.1rem; font-weight: 600; text-decoration: none; color: var(--head); }
-ul.pages a.title:hover { color: var(--accent); }
-ul.pages p.desc { margin: .25rem 0 .4rem; color: var(--fg); font-size: .95rem; }
-ul.pages .meta { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem .5rem; font-size: .85rem; color: var(--muted); }
-h1.list-head { font-size: 1.25rem; border: none; margin: 0 0 1rem; }
-.pager { display: flex; justify-content: space-between; margin-top: 1.5rem; }
-.empty { color: var(--muted); }
-.status { text-align: center; padding: 3rem 0; }
-.status h1 { border: none; font-size: 3rem; margin: 0; color: var(--muted); }
+html { -webkit-text-size-adjust: 100%; background: var(--paper); }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: "Shippori Mincho", serif; }
+.pg { max-width: 640px; margin: 0 auto; padding: 40px 24px 48px; }
+a { color: inherit; }
+
+/* ヘッダ：サイト名だけ */
+.site { text-align: center; margin-bottom: 34px; }
+.site a { text-decoration: none; font-size: 20px; letter-spacing: .5em; padding-left: .5em; }
+.site.small a { font-size: 15px; }
+
+.kicker { text-align: center; font-size: 12px; color: var(--faint); letter-spacing: .3em; margin: 0 0 12px; }
+.kicker .x { color: var(--sub); letter-spacing: .1em; }
+
+/* 目次 */
+.toc { list-style: none; padding: 0; margin: 0 0 30px; }
+.toc li a { display: flex; align-items: baseline; gap: 6px; padding: 8px 0; text-decoration: none; font-size: 15.5px; line-height: 1.6; }
+.toc .t { flex: 0 1 auto; overflow-wrap: anywhere; }
+.toc .dots { flex: 1 1 24px; border-bottom: 1px dotted var(--dot); transform: translateY(-5px); }
+.toc .d { flex: none; font-size: 11px; color: var(--faint); font-family: "Zen Kaku Gothic New", sans-serif; }
+.toc li a:hover .t { color: var(--amber); }
+.empty { text-align: center; color: var(--faint); font-size: 14px; margin: 0 0 30px; }
+.pager { display: flex; justify-content: space-between; font-size: 13px; color: var(--sub); margin: -10px 0 26px;
+         font-family: "Zen Kaku Gothic New", sans-serif; }
+.pager a { text-decoration: none; }
+
+.tags { text-align: center; font-size: 12.5px; color: var(--sub); line-height: 2.2; border-top: 1px solid var(--rule); padding-top: 18px; }
+.tags a { text-decoration: none; margin: 0 7px; white-space: nowrap; }
+.tags a.on { color: var(--ink); border-bottom: 1px solid var(--amber); }
+.tags a:hover { color: var(--amber); }
+
+/* 個別ページ */
+article { overflow-wrap: break-word; }
+article h1 { font-size: 22px; font-weight: 600; line-height: 1.6; margin: 0 0 6px; text-align: center; }
+.dateline { text-align: center; font-size: 11.5px; color: var(--faint); font-family: "Zen Kaku Gothic New", sans-serif; margin-bottom: 28px; }
+article p { font-size: 15.5px; line-height: 2; margin: 0 0 1em; text-indent: 1em; }
+article p:has(> img:only-child) { text-indent: 0; }
+article h2 { font-size: 17px; font-weight: 600; margin: 40px 0 14px; text-align: center; letter-spacing: .08em; line-height: 1.6; }
+article h2::before, article h2::after { content: "—"; color: var(--dot); font-weight: 400; margin: 0 .6em; }
+article h3 { font-size: 15.5px; font-weight: 600; margin: 28px 0 8px; line-height: 1.7; }
+article h3::before { content: ""; display: inline-block; width: 1em; border-top: 1px solid var(--amber); margin-right: .5em; vertical-align: middle; }
+article h4, article h5, article h6 { font-size: 14.5px; font-weight: 600; margin: 22px 0 6px; }
+article strong { font-weight: 600; background: linear-gradient(transparent 62%, #f1e2c4 62%); }
+article mark { background: #f1e2c4; color: inherit; padding: 0 .1em; }
+article ul, article ol { font-size: 15px; line-height: 1.9; margin: 0 0 1.2em; padding-left: 1.4em; }
+article ul { list-style: none; padding-left: 1em; }
+article ul li { position: relative; }
+article ul li::before { content: "・"; position: absolute; left: -1em; color: var(--faint); }
+article ol li::marker { font-size: 12px; color: var(--faint); font-family: "Zen Kaku Gothic New", sans-serif; }
+article li { margin-bottom: .35em; }
+article li p { font-size: inherit; line-height: inherit; text-indent: 0; margin: 0 0 .4em; }
+article li > ul, article li > ol { margin: .3em 0 .3em; }
+.lead { font-weight: 600; font-size: 14.5px; margin: 20px 0 6px; text-indent: 0 !important; }
+article a { color: var(--ink); text-decoration-color: var(--amber); text-underline-offset: 3px; }
+article a:hover { color: var(--amber); }
+article hr { border: none; border-top: 1px solid var(--rule); margin: 32px 0; }
+article img { display: block; max-width: 100%; height: auto; margin: 1.2em auto; }
+article code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .86em; background: var(--tint); padding: .1em .35em; }
+article pre { background: var(--tint); border-left: 1px solid var(--amber); padding: 12px 16px; overflow-x: auto; margin: 0 0 1.4em; line-height: 1.7; }
+article pre code { background: none; padding: 0; font-size: 13px; }
+article blockquote { margin: 0 0 1.4em; padding: 2px 0 2px 16px; border-left: 1px solid var(--rule); color: var(--sub); }
+article blockquote p { font-size: 14.5px; text-indent: 0; }
+
+/* 表：罫線は横だけ、塗りなし */
+.tbl { overflow-x: auto; margin: 0 0 1.2em; }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; min-width: 420px; }
+th, td { padding: 8px 8px; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; line-height: 1.7; }
+thead th { font-weight: 400; color: var(--faint); font-size: 11.5px; font-family: "Zen Kaku Gothic New", sans-serif; border-bottom: 1px solid var(--ink); }
+tbody tr:last-child td { border-bottom: 1px solid var(--ink); }
+
+/* 注記（コールアウト）：色の箱にせず、細い琥珀色の縦線と小さなラベル */
+.aside { margin: 0 0 1.4em; padding: 2px 0 2px 16px; border-left: 1px solid var(--amber); font-size: 14px; line-height: 1.9; color: #3b372f; }
+.aside .h { display: block; font-size: 11px; letter-spacing: .25em; color: var(--amber); font-family: "Zen Kaku Gothic New", sans-serif; margin-bottom: 2px; }
+.aside p { font-size: 14px; line-height: 1.9; text-indent: 0; margin: 0 0 .5em; }
+.aside > :last-child, .aside p:last-child { margin-bottom: 0; }
+.aside ul, .aside ol { font-size: 14px; }
+
+/* チェックリスト */
+article ul.task { list-style: none; padding-left: 0; }
+article ul.task > li::before { content: none; }
+.task label { display: flex; gap: 10px; align-items: baseline; cursor: pointer; }
+.task input { appearance: none; -webkit-appearance: none; width: 13px; height: 13px; border: 1px solid var(--sub); border-radius: 0;
+              flex: none; transform: translateY(1px); margin: 0; background: var(--paper); cursor: pointer; }
+.task input:checked { background: var(--ink); box-shadow: inset 0 0 0 2px var(--paper); }
+.task input:checked + span { color: var(--faint); text-decoration: line-through; text-decoration-color: var(--dot); }
+
+.foot { margin-top: 44px; border-top: 1px solid var(--rule); padding-top: 18px; text-align: center; font-size: 12px; color: var(--sub);
+        font-family: "Zen Kaku Gothic New", sans-serif; line-height: 2.2; }
+.foot a { text-decoration: none; margin: 0 6px; }
+.foot a:hover { color: var(--amber); }
+.foot .back { display: block; margin-top: 6px; font-family: "Shippori Mincho", serif; font-size: 13.5px; color: var(--ink); }
+
+/* 404・410 */
+.status { text-align: center; padding: 24px 0 8px; }
+.status .code { font-size: 12px; color: var(--faint); letter-spacing: .3em; font-family: "Zen Kaku Gothic New", sans-serif; margin: 0 0 10px; }
+.status p.msg { font-size: 15.5px; line-height: 2; margin: 0 0 30px; }
 `;
 
 export type LayoutOpts = {
@@ -92,6 +120,7 @@ export type LayoutOpts = {
   ogType?: "article" | "website";
   noindex?: boolean;
   body: string;
+  smallHeader?: boolean; // トップ以外はサイト名を小さく
   extraHead?: string;
   script?: string;
 };
@@ -104,6 +133,7 @@ export function layout(o: LayoutOpts): string {
   const head: string[] = [
     `<meta charset="utf-8">`,
     `<meta name="viewport" content="width=device-width, initial-scale=1">`,
+    `<meta name="color-scheme" content="light">`,
     `<title>${escapeHtml(fullTitle)}</title>`,
   ];
   if (desc) head.push(`<meta name="description" content="${escapeHtml(desc)}">`);
@@ -120,6 +150,9 @@ export function layout(o: LayoutOpts): string {
     head.push(`<meta name="twitter:card" content="${o.ogImage ? "summary_large_image" : "summary"}">`);
   }
   head.push(`<link rel="icon" href="/static/favicon.svg" type="image/svg+xml">`);
+  head.push(`<link rel="preconnect" href="https://fonts.googleapis.com">`);
+  head.push(`<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>`);
+  head.push(`<link rel="stylesheet" href="${FONTS_HREF}">`);
   if (o.extraHead) head.push(o.extraHead);
   return `<!doctype html>
 <html lang="ja">
@@ -128,10 +161,12 @@ ${head.join("\n")}
 <style>${CSS}</style>
 </head>
 <body>
-<header class="site"><a class="brand" href="/">${SITE_NAME}</a></header>
+<div class="pg">
+<div class="site${o.smallHeader ? " small" : ""}"><a href="/">${SITE_NAME}</a></div>
 <main>
 ${o.body}
 </main>
+</div>
 ${o.script ? `<script>${o.script}</script>` : ""}
 </body>
 </html>`;
@@ -141,6 +176,8 @@ export function statusPage(code: 404 | 410, message: string): string {
   return layout({
     title: code === 404 ? "見つかりません" : "削除されました",
     noindex: true,
-    body: `<div class="status"><h1>${code}</h1><p>${escapeHtml(message)}</p><p><a href="/">琥珀のトップへ</a></p></div>`,
+    smallHeader: true,
+    body: `<div class="status"><p class="code">${code}</p><p class="msg">${escapeHtml(message)}</p></div>
+<div class="foot"><a class="back" href="/">目次へ</a></div>`,
   });
 }

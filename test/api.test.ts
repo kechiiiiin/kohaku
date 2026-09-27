@@ -73,13 +73,15 @@ test("タグ一覧: /api/tags の件数とトップのタグ一覧が一致", as
     { tag: "豚肉", count: 1 },
   ]);
   const top = await (await req(env, "/", { auth: false })).text();
-  assert.match(top, /レシピ<span class="n">2<\/span>/);
-  assert.match(top, /豚肉<span class="n">1<\/span>/);
+  // 目次の下のタグ（件数の多い順・件数は出さない）
+  assert.match(top, /<nav class="tags"[^>]*><a href="\/t\/%E3%83%AC%E3%82%B7%E3%83%94\/">レシピ<\/a><a href="\/t\/%E8%B1%9A%E8%82%89\/">豚肉<\/a><\/nav>/);
   assert.doesNotMatch(top, /隠/);
   const tagPage = await req(env, "/t/%E3%83%AC%E3%82%B7%E3%83%94/", { auth: false });
   assert.equal(tagPage.status, 200);
   const tp = await tagPage.text();
   assert.match(tp, /p-one/);
+  assert.match(tp, /<a class="on" href="\/t\/%E3%83%AC%E3%82%B7%E3%83%94\/">レシピ<\/a>/);
+  assert.match(tp, /目次 <span class="x">— レシピ<\/span>/);
   assert.doesNotMatch(tp, /p-hidden/);
 });
 

@@ -13,6 +13,11 @@ tags: [cooking]
 > [!tip] コツ
 > 茹ですぎない ==強調==
 
+> [!warning]
+> 熱い
+
+**前の晩（10分）**
+
 - [ ] 豚肉
 - [x] ポン酢
 
@@ -49,11 +54,16 @@ test("md ページ: head 一式・コールアウト・タスク・表・コー�
   assert.match(h, /name="twitter:card" content="summary"/);
   assert.match(h, /<meta name="description" content="ごま油とポン酢で。">/);
   assert.doesNotMatch(h, /noindex/);
-  assert.match(h, /callout callout-green/);
+  assert.match(h, /<div class="aside"><span class="h">コツ<\/span>/);
   assert.match(h, /<mark>強調<\/mark>/);
-  assert.match(h, /class="task-check"/);
+  assert.match(h, /<span class="h">注意<\/span>/);
+  assert.match(h, /<p class="lead">前の晩（10分）<\/p>/);
+  assert.match(h, /<ul class="task">\n<li><label><input type="checkbox" class="task-check"><span>豚肉<\/span><\/label><\/li>/);
+  assert.match(h, /<h1>豚しゃぶ<\/h1>\n<div class="dateline">\d{4}年\d{1,2}月\d{1,2}日<\/div>/);
+  assert.match(h, /<a class="back" href="\/">目次へ<\/a>/);
+  assert.doesNotMatch(h, /prefers-color-scheme/);
   assert.match(h, /kohaku-check:/);
-  assert.match(h, /<div class="table-wrap"><table>/);
+  assert.match(h, /<div class="tbl"><table>/);
   assert.match(h, /<mark>大事<\/mark>/);
   assert.match(h, /\[\[コード内\]\] ==そのまま==/);
   assert.match(h, /<a href="\/torimune-bento\/">鶏むね作り置き弁当<\/a>/);

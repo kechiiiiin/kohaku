@@ -435,7 +435,7 @@ const PAGE_HEADERS = {
   "Referrer-Policy": "strict-origin-when-cross-origin",
 };
 const MD_CSP =
-  "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; frame-ancestors 'none'";
+  "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; script-src 'self' 'unsafe-inline'; frame-ancestors 'none'";
 
 function html(body: string, status = 200, extra: Record<string, string> = {}) {
   return new Response(body, { status, headers: { ...PAGE_HEADERS, "Content-Security-Policy": MD_CSP, ...extra } });
