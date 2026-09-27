@@ -90,7 +90,7 @@ article blockquote p { font-size: 16px; text-indent: 0; }
 .tbl { overflow-x: auto; margin: 0 0 1.2em; }
 table { border-collapse: collapse; width: 100%; font-size: 15px; min-width: 460px; }
 th, td { padding: 8px 8px; border-bottom: 1px solid var(--rule); text-align: left; vertical-align: top; line-height: 1.7; }
-thead th { font-weight: 400; color: var(--faint); font-size: 12.5px; font-family: "Zen Kaku Gothic New", sans-serif; border-bottom: 1px solid var(--ink); }
+thead th { white-space: nowrap; font-weight: 400; color: var(--faint); font-size: 12.5px; font-family: "Zen Kaku Gothic New", sans-serif; border-bottom: 1px solid var(--ink); }
 tbody tr:last-child td { border-bottom: 1px solid var(--ink); }
 
 /* 注記（コールアウト）：色の箱にせず、細い琥珀色の縦線と小さなラベル */
